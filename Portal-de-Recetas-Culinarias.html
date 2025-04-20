@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CocinaFácil - Tu portal de recetas</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>tailwind.config={theme:{extend:{colors:{primary:'#FF6B35',secondary:'#2EC4B6'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        :where([class^="ri-"])::before { content: "\f3c2"; }
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .custom-checkbox {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            position: relative;
+            cursor: pointer;
+        }
+        .custom-checkbox:checked {
+            background-color: #FF6B35;
+            border-color: #FF6B35;
+        }
+        .custom-checkbox:checked::after {
+            content: '';
+            position: absolute;
+            left: 6px;
+            top: 2px;
+            width: 6px;
+            height: 12px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #FF6B35;
+        }
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+        .custom-range {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 5px;
+            background: #ddd;
+            outline: none;
+        }
+        .custom-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #FF6B35;
+            cursor: pointer;
+        }
+        .custom-range::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #FF6B35;
+            cursor: pointer;
+            border: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Cookie Banner -->
+    <div id="cookieBanner" class="fixed bottom-0 left-0 right-0 bg-white shadow-lg z-50 p-4 border-t border-gray-200">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex-1">
+                <h3 class="font-semibold text-gray-800">Usamos cookies para mejorar tu experiencia</h3>
+                <p class="text-sm text-gray-600 mt-1">Utilizamos cookies propias y de terceros para personalizar el contenido y analizar el tráfico de nuestra web.</p>
+            </div>
+            <div class="flex gap-3">
+                <button id="cookieConfig" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-button whitespace-nowrap hover:bg-gray-100 transition">Configurar</button>
+                <button id="cookieAccept" class="px-4 py-2 bg-primary text-white rounded-button whitespace-nowrap hover:bg-primary/90 transition">Aceptar todo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="#" class="text-primary text-3xl font-['Pacifico']">logo</a>
+                </div>
+                
+                <div class="hidden md:block flex-1 max-w-2xl mx-8">
+                    <div class="relative">
+                        <input type="text" placeholder="Buscar recetas, ingredientes..." class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm">
+                        <div class="absolute left-3 top-2.5 w-5 h-5 flex items-center justify-center text-gray-400">
+                            <i class="ri-search-line"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <div id="userMenuButton" class="relative">
+                        <button class="flex items-center text-gray-700 hover:text-primary transition">
+                            <div class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 mr-2">
+                                <i class="ri-user-line"></i>
+                            </div>
+                            <span class="hidden md:inline-block">Mi cuenta</span>
+                            <div class="w-4 h-4 flex items-center justify-center ml-1">
+                                <i class="ri-arrow-down-s-line"></i>
+                            </div>
+                        </button>
+                        
+                        <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded shadow-lg py-1 z-50">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mi perfil</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mis recetas</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Recetas guardadas</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Configuración</a>
+                            <div class="border-t border-gray-100 my-1"></div>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Cerrar sesión</a>
+                        </div>
+                    </div>
+                    
+                    <button id="openLoginModal" class="px-4 py-2 bg-primary text-white rounded-button whitespace-nowrap hover:bg-primary/90 transition">Iniciar sesión</button>
+                    
+                    <button class="md:hidden w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100">
+                        <i class="ri-menu-line text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Navigation -->
+    <nav class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex space-x-8 h-12 overflow-x-auto no-scrollbar">
+                <a href="#" class="inline-flex items-center px-1 pt-1 border-b-2 border-primary text-sm font-medium text-primary whitespace-nowrap">
+                    Inicio
+                </a>
+                <a href="#" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-600 hover:text-gray-800 hover:border-gray-300 whitespace-nowrap">
+                    Categorías
+                </a>
+                <a href="#" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-600 hover:text-gray-800 hover:border-gray-300 whitespace-nowrap">
+                    Recetas populares
+                </a>
+                <a href="#" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-600 hover:text-gray-800 hover:border-gray-300 whitespace-nowrap">
+                    Recetas rápidas
+                </a>
+                <a href="#" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-600 hover:text-gray-800 hover:border-gray-300 whitespace-nowrap">
+                    Cocina internacional
+                </a>
+                <a href="#" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-600 hover:text-gray-800 hover:border-gray-300 whitespace-nowrap">
+                    Postres
+                </a>
+                <a href="#" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-600 hover:text-gray-800 hover:border-gray-300 whitespace-nowrap">
+                    Saludable
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden">
+        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://readdy.ai/api/search-image?query=beautiful%20food%20photography%20with%20various%20colorful%20dishes%20on%20a%20wooden%20table%2C%20soft%20natural%20lighting%2C%20fresh%20ingredients%2C%20professional%20food%20styling%2C%20shallow%20depth%20of%20field%2C%20high-end%20restaurant%20quality%20presentation%2C%20appetizing%20and%20vibrant%20colors&width=1600&height=800&seq=1&orientation=landscape'); opacity: 0.8;"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-gray-900/80 to-gray-900/30"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
+            <div class="max-w-2xl">
+                <h1 class="text-4xl md:text-5xl font-bold text-white leading-tight">Descubre y comparte las mejores recetas del mundo</h1>
+                <p class="mt-4 text-xl text-white/90">Explora miles de recetas, guarda tus favoritas y comparte tus creaciones culinarias con nuestra comunidad.</p>
+                <div class="mt-8 flex flex-col sm:flex-row gap-4">
+                    <button class="px-6 py-3 bg-primary text-white rounded-button whitespace-nowrap hover:bg-primary/90 transition text-lg">Explorar recetas</button>
+                    <button class="px-6 py-3 bg-white text-gray-800 rounded-button whitespace-nowrap hover:bg-gray-100 transition text-lg">Crear cuenta</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="py-12 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8">Categorías populares</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <a href="#" class="group">
+                    <div class="rounded-lg overflow-hidden aspect-square relative">
+                        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://readdy.ai/api/search-image?query=delicious%20pasta%20dishes%20with%20tomato%20sauce%2C%20fresh%20herbs%2C%20and%20parmesan%20cheese%20on%20a%20simple%20white%20plate%2C%20professional%20food%20photography%20with%20soft%20natural%20lighting&width=400&height=400&seq=2&orientation=squarish');"></div>
+                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition"></div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-white font-semibold text-lg">Pasta</span>
+                        </div>
+                    </div>
+                </a>
+                <a href="#" class="group">
+                    <div class="rounded-lg overflow-hidden aspect-square relative">
+                        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://readdy.ai/api/search-image?query=assorted%20desserts%20and%20pastries%20beautifully%20arranged%20on%20a%20marble%20surface%2C%20including%20chocolate%20cake%2C%20macarons%2C%20and%20fruit%20tarts%2C%20professional%20food%20photography%20with%20soft%20lighting&width=400&height=400&seq=3&orientation=squarish');"></div>
+                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition"></div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-white font-semibold text-lg">Postres</span>
+                        </div>
+                    </div>
+                </a>
+                <a href="#" class="group">
+                    <div class="rounded-lg overflow-hidden aspect-square relative">
+                        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://readdy.ai/api/search-image?query=healthy%20salad%20with%20fresh%20vegetables%2C%20grilled%20chicken%2C%20avocado%2C%20and%20a%20light%20dressing%20in%20a%20white%20bowl%2C%20bright%20natural%20lighting%2C%20clean%20and%20fresh%20appearance&width=400&height=400&seq=4&orientation=squarish');"></div>
+                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition"></div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-white font-semibold text-lg">Ensaladas</span>
+                        </div>
+                    </div>
+                </a>
+                <a href="#" class="group">
+                    <div class="rounded-lg overflow-hidden aspect-square relative">
+                        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://readdy.ai/api/search-image?query=perfectly%20grilled%20steak%20with%20roasted%20vegetables%20and%20herbs%20on%20a%20dark%20plate%2C%20professional%20food%20photography%20with%20dramatic%20lighting%2C%20restaurant%20quality%20presentation&width=400&height=400&seq=5&orientation=squarish');"></div>
+                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition"></div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-white font-semibold text-lg">Carnes</span>
+                        </div>
+                    </div>
+                </a>
+                <a href="#" class="group">
+                    <div class="rounded-lg overflow-hidden aspect-square relative">
+                        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://readdy.ai/api/search-image?query=assorted%20seafood%20dishes%20with%20fish%2C%20shrimp%2C%20and%20mussels%2C%20garnished%20with%20lemon%20and%20herbs%2C%20served%20on%20a%20blue%20plate%2C%20professional%20food%20photography%20with%20coastal%20atmosphere&width=400&height=400&seq=6&orientation=squarish');"></div>
+                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition"></div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-white font-semibold text-lg">Mariscos</span>
+                        </div>
+                    </div>
+                </a>
+                <a href="#" class="group">
+                    <div class="rounded-lg overflow-hidden aspect-square relative">
+                        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://readdy.ai/api/search-image?query=vegetarian%20dishes%20with%20colorful%20roasted%20vegetables%2C%20grains%2C%20and%20plant-based%20proteins%2C%20beautifully%20arranged%20on%20a%20rustic%20wooden%20table%2C%20natural%20lighting&width=400&height=400&seq=7&orientation=squarish');"></div>
+                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition"></div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-white font-semibold text-lg">Vegetariano</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Recipes -->
+    <section class="py-12 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-900">Recetas destacadas</h2>
+                <a href="#" class="text-primary font-medium hover:underline">Ver todas</a>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Recipe Card 1 -->
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition">
+                    <div class="relative aspect-video">
+                        <img src="https://readdy.ai/api/search-image?query=paella%20valenciana%20with%20saffron%20rice%2C%20shrimp%2C%20mussels%2C%20and%20chicken%20in%20a%20traditional%20paella%20pan%2C%20garnished%20with%20lemon%20and%20parsley%2C%20authentic%20Spanish%20cuisine%2C%20professional%20food%20photography&width=600&height=400&seq=8&orientation=landscape" alt="Paella Valenciana" class="w-full h-full object-cover object-top">
+                        <button class="absolute top-3 right-3 w-10 h-10 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-full text-gray-700 hover:text-primary transition">
+                            <i class="ri-bookmark-line text-xl"></i>
+                        </button>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-center text-sm text-gray-500 mb-2">
+                            <div class="flex items-center mr-4">
+                                <div class="w-4 h-4 flex items-center justify-center mr-1">
+                                    <i class="ri-time-line"></i>
+                                </div>
+                                <span>45 min</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-4 h-4 flex items-center justify-center mr-1">
+                                    <i class="ri-fire-line"></i>
+                                </div>
+                                <span>Media</span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Paella Valenciana Tradicional</h3>
+                        <p class="text-gray-600 line-clamp-2">La auténtica paella valenciana con arroz, pollo, conejo, judías verdes y garrofón. Un plato emblemático de la cocina española.</p>
+                        <div class="mt-4 flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-gray-200 overflow-hidden mr-2">
+                                    <img src="https://readdy.ai/api/search-image?query=professional%20headshot%20of%20a%20female%20chef%20with%20dark%20hair%2C%20smiling%2C%20wearing%20a%20white%20chef%20coat%2C%20neutral%20background%2C%20warm%20lighting&width=100&height=100&seq=9&orientation=squarish" alt="Chef" class="w-full h-full object-cover">
+                                </div>
+                                <span class="text-sm text-gray-700">Carmen Rodríguez</span>
+                            </div>
+                            <div class="flex items-center text-amber-400">
+                                <div class="w-4 h-4 flex items-center justify-center">
+                                    <i class="ri-star-fill"></i>
+                                </div>
+                                <span class="ml-1 text-sm font-medium">4.8</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recipe Card 2 -->
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition">
+                    <div class="relative aspect-video">
+                        <img src="https://readdy.ai/api/search-image?query=tiramisu%20in%20a%20glass%20dish%20with%20layers%20of%20coffee-soaked%20ladyfingers%20and%20mascarpone%20cream%2C%20dusted%20with%20cocoa%20powder%2C%20Italian%20dessert%2C%20professional%20food%20photography%20with%20soft%20lighting&width=600&height=400&seq=10&orientation=landscape" alt="Tiramisú Italiano" class="w-full h-full object-cover object-top">
+                        <button class="absolute top-3 right-3 w-10 h-10 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-full text-gray-700 hover:text-primary transition">
+                            <i class="ri-bookmark-line text-xl"></i>
+                        </button>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-center text-sm text-gray-500 mb-2">
+                            <div class="flex items-center mr-4">
+                                <div class="w-4 h-4 flex items-center justify-center mr-1">
+                                    <i class="ri-time-line"></i>
+                                </div>
+                                <span>30 min</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-4 h-4 flex items-center justify-center mr-1">
+                                    <i class="ri-fire-line"></i>
+                                </div>
+                                <span>Fácil</span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Tiramisú Italiano Clásico</h3>
+                        <p class="text-gray-600 line-clamp-2">El postre italiano por excelencia con capas de bizcochos empapados en café, crema de mascarpone y cacao en polvo. Perfecto para cualquier ocasión.</p>
+                        <div class="mt-4 flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-gray-200 overflow-hidden mr-2">
+                                    <img src="https://readdy.ai/api/search-image?query=professional%20headshot%20of%20a%20male%20pastry%20chef%20with%20glasses%2C%20smiling%2C%20wearing%20a%20black%20chef%20coat%2C%20neutral%20background%2C%20warm%20lighting&width=100&height=100&seq=11&orientation=squarish" alt="Chef" class="w-full h-full object-cover">
+                                </div>
+                                <span class="text-sm text-gray-700">Marco Bianchi</span>
+                            </div>
+                            <div class="flex items-center text-amber-400">
+                                <div class="w-4 h-4 flex items-center justify-center">
+                                    <i class="ri-star-fill"></i>
+                                </div>
+                                <span class="ml-1 text-sm font-medium">4.9</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recipe Card 3 -->
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition">
+                    <div class="relative aspect-video">
+                        <img src="https://readdy.ai/api/search-image?query=mexican%20guacamole%20with%20avocado%2C%20tomato%2C%20onion%2C%20cilantro%2C%20and%20lime%20in%20a%20stone%20mortar%2C%20served%20with%20tortilla%20chips%2C%20authentic%20Mexican%20appetizer%2C%20professional%20food%20photography&width=600&height=400&seq=12&orientation=landscape" alt="Guacamole Mexicano" class="w-full h-full object-cover object-top">
+                        <button class="absolute top-3 right-3 w-10 h-10 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-full text-gray-700 hover:text-primary transition">
+                            <i class="ri-bookmark-line text-xl"></i>
+                        </button>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-center text-sm text-gray-500 mb-2">
+                            <div class="flex items-center mr-4">
+                                <div class="w-4 h-4 flex items-center justify-center mr-1">
+                                    <i class="ri-time-line"></i>
+                                </div>
+                                <span>15 min</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-4 h-4 flex items-center justify-center mr-1">
+                                    <i class="ri-fire-line"></i>
+                                </div>
+                                <span>Fácil</span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Guacamole Mexicano Auténtico</h3>
+                        <p class="text-gray-600 line-clamp-2">Delicioso guacamole preparado con aguacates maduros, tomate, cebolla, cilantro y un toque de chile. Perfecto para servir con nachos o como acompañamiento.</p>
+                        <div class="mt-4 flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-gray-200 overflow-hidden mr-2">
+                                    <img src="https://readdy.ai/api/search-image?query=professional%20headshot%20of%20a%20female%20chef%20with%20curly%20hair%2C%20smiling%2C%20wearing%20a%20colorful%20chef%20coat%2C%20neutral%20background%2C%20warm%20lighting&width=100&height=100&seq=13&orientation=squarish" alt="Chef" class="w-full h-full object-cover">
+                                </div>
+                                <span class="text-sm text-gray-700">Alejandra Gómez</span>
+                            </div>
+                            <div class="flex items-center text-amber-400">
+                                <div class="w-4 h-4 flex items-center justify-center">
+                                    <i class="ri-star-fill"></i>
+                                </div>
+                                <span class="ml-1 text-sm font-medium">4.7</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recipe Detail Section -->
+    <section class="py-12 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-gray-50 rounded-xl overflow-hidden shadow-sm">
+                <div class="p-6 md:p-8 lg:p-10">
+                    <div class="flex flex-col lg:flex-row gap-8">
+                        <div class="lg:w-1/2">
+                            <div class="aspect-video rounded-lg overflow-hidden mb-4">
+                                <img src="https://readdy.ai/api/search-image?query=homemade%20chocolate%20cake%20with%20layers%20of%20rich%20chocolate%20frosting%2C%20decorated%20with%20chocolate%20shavings%20and%20fresh%20berries%2C%20on%20a%20cake%20stand%2C%20professional%20food%20photography%20with%20soft%20natural%20lighting&width=800&height=500&seq=14&orientation=landscape" alt="Tarta de Chocolate" class="w-full h-full object-cover object-top">
+                            </div>
+                            <div class="grid grid-cols-4 gap-2">
+                                <div class="aspect-square rounded overflow-hidden">
+                                    <img src="https://readdy.ai/api/search-image?query=close-up%20of%20chocolate%20cake%20batter%20being%20mixed%20in%20a%20bowl%2C%20professional%20food%20photography%20with%20soft%20natural%20lighting&width=200&height=200&seq=15&orientation=squarish" alt="Preparación" class="w-full h-full object-cover object-top">
+                                </div>
+                                <div class="aspect-square rounded overflow-hidden">
+                                    <img src="https://readdy.ai/api/search-image?query=chocolate%20cake%20layers%20being%20assembled%20with%20frosting%2C%20professional%20food%20photography%20with%20soft%20natural%20lighting&width=200&height=200&seq=16&orientation=squarish" alt="Montaje" class="w-full h-full object-cover object-top">
+                                </div>
+                                <div class="aspect-square rounded overflow-hidden">
+                                    <img src="https://readdy.ai/api/search-image?query=chocolate%20cake%20being%20decorated%20with%20fresh%20berries%2C%20professional%20food%20photography%20with%20soft%20natural%20lighting&width=200&height=200&seq=17&orientation=squarish" alt="Decoración" class="w-full h-full object-cover object-top">
+                                </div>
+                                <div class="aspect-square rounded overflow-hidden">
+                                    <img src="https://readdy.ai/api/search-image?query=slice%20of%20chocolate%20cake%20on%20a%20plate%20with%20a%20fork%2C%20professional%20food%20photography%20with%20soft%20natural%20lighting&width=200&height=200&seq=18&orientation=squarish" alt="Porción" class="w-full h-full object-cover object-top">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="lg:w-1/2">
+                            <div class="flex justify-between items-start mb-4">
+                                <h2 class="text-3xl font-bold text-gray-900">Tarta de Chocolate con Frutos Rojos</h2>
+                                <button class="w-10 h-10 flex items-center justify-center bg-gray-100 rounded-full text-gray-700 hover:text-primary transition">
+                                    <i class="ri-bookmark-line text-xl"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="flex items-center mb-6">
+                                <div class="flex text-amber-400 mr-2">
+                                    <i class="ri-star-fill"></i>
+                                    <i class="ri-star-fill"></i>
+                                    <i class="ri-star-fill"></i>
+                                    <i class="ri-star-fill"></i>
+                                    <i class="ri-star-half-fill"></i>
+                                </div>
+                                <span class="text-gray-600">(128 valoraciones)</span>
+                            </div>
+                            
+                            <div class="flex flex-wrap gap-4 mb-6">
+                                <div class="flex items-center bg-gray-100 px-3 py-2 rounded-lg">
+                                    <div class="w-5 h-5 flex items-center justify-center mr-2 text-primary">
+                                        <i class="ri-time-line"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-500">Tiempo</p>
+                                        <p class="text-sm font-medium">90 min</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center bg-gray-100 px-3 py-2 rounded-lg">
+                                    <div class="w-5 h-5 flex items-center justify-center mr-2 text-primary">
+                                        <i class="ri-fire-line"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-500">Dificultad</p>
+                                        <p class="text-sm font-medium">Media</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center bg-gray-100 px-3 py-2 rounded-lg">
+                                    <div class="w-5 h-5 flex items-center justify-center mr-2 text-primary">
+                                        <i class="ri-user-line"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-500">Porciones</p>
+                                        <p class="text-sm font-medium">8 personas</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-3">Ingredientes</h3>
+                                <ul class="space-y-2">
+                                    <li class="flex items-start">
+                                        <input type="checkbox" class="custom-checkbox mt-0.5 mr-2">
+                                        <span class="text-gray-700">200g de chocolate negro (70% cacao)</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <input type="checkbox" class="custom-checkbox mt-0.5 mr-2">
+                                        <span class="text-gray-700">200g de mantequilla sin sal</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <input type="checkbox" class="custom-checkbox mt-0.5 mr-2">
+                                        <span class="text-gray-700">250g de azúcar</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <input type="checkbox" class="custom-checkbox mt-0.5 mr-2">
+                                        <span class="text-gray-700">4 huevos</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <input type="checkbox" class="custom-checkbox mt-0.5 mr-2">
+                                        <span class="text-gray-700">180g de harina de trigo</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <input type="checkbox" class="custom-checkbox mt-0.5 mr-2">
+                                        <span class="text-gray-700">30g de cacao en polvo</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <input type="checkbox" class="custom-checkbox mt-0.5 mr-2">
+                                        <span class="text-gray-700">200g de frutos rojos frescos (fresas, frambuesas, arándanos)</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-3">Utensilios</h3>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-700">Molde desmontable 24cm</span>
+                                    <span class="bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-700">Batidora eléctrica</span>
+                                    <span class="bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-700">Papel de horno</span>
+                                    <span class="bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-700">Bol grande</span>
+                                    <span class="bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-700">Espátula</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex gap-3">
+                                <button class="flex-1 py-3 bg-primary text-white rounded-button whitespace-nowrap hover:bg-primary/90 transition">Ver receta completa</button>
+                                <button class="w-12 h-12 flex items-center justify-center bg-gray-100 rounded-full text-gray-700 hover:text-primary transition">
+                                    <i class="ri-share-line text-xl"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recipe Steps -->
+    <section class="py-12 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8">Preparación</h2>
+            
+            <div class="space-y-6">
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <div class="flex">
+                        <div class="w-10 h-10 flex items-center justify-center bg-primary text-white rounded-full font-semibold mr-4 flex-shrink-0">
+                            1
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Preparar los ingredientes</h3>
+                            <p class="text-gray-700">Precalienta el horno a 180°C. Engrasa un molde desmontable de 24cm de diámetro y fórralo con papel de horno. Trocea el chocolate y ponlo en un bol con la mantequilla cortada en dados.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <div class="flex">
+                        <div class="w-10 h-10 flex items-center justify-center bg-primary text-white rounded-full font-semibold mr-4 flex-shrink-0">
+                            2
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Fundir el chocolate</h3>
+                            <p class="text-gray-700">Derrite el chocolate y la mantequilla al baño maría o en el microondas a potencia media, removiendo cada 30 segundos hasta que esté completamente fundido y suave. Deja enfriar ligeramente.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <div class="flex">
+                        <div class="w-10 h-10 flex items-center justify-center bg-primary text-white rounded-full font-semibold mr-4 flex-shrink-0">
+                            3
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Batir los huevos</h3>
+                            <p class="text-gray-700">En un bol grande, bate los huevos con el azúcar hasta que la mezcla esté espumosa y haya aumentado ligeramente de volumen. Incorpora la mezcla de chocolate fundido y mezcla bien.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <div class="flex">
+                        <div class="w-10 h-10 flex items-center justify-center bg-primary text-white rounded-full font-semibold mr-4 flex-shrink-0">
+                            4
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Añadir ingredientes secos</h3>
+                            <p class="text-gray-700">Tamiza la harina y el cacao en polvo sobre la mezcla. Incorpora con movimientos envolventes hasta que no queden grumos y la masa esté homogénea. Ten cuidado de no sobrebatir.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <div class="flex">
+                        <div class="w-10 h-10 flex items-center justify-center bg-primary text-white rounded-full font-semibold mr-4 flex-shrink-0">
+                            5
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Hornear</h3>
+                            <p class="text-gray-700">Vierte la masa en el molde preparado y hornea durante 30-35 minutos, o hasta que al insertar un palillo en el centro salga con algunas migas húmedas (no completamente limpio). Deja enfriar en el molde durante 10 minutos antes de desmoldar.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <div class="flex">
+                        <div class="w-10 h-10 flex items-center justify-center bg-primary text-white rounded-full font-semibold mr-4 flex-shrink-0">
+                            6
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Decorar</h3>
+                            <p class="text-gray-700">Una vez que la tarta esté completamente fría, decora con los frutos rojos frescos por encima. Si lo deseas, puedes espolvorear un poco de azúcar glas para darle un toque final.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reviews Section -->
+    <section class="py-12 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-900">Valoraciones y reseñas</h2>
+                <div class="flex items-center">
+                    <div class="flex text-amber-400 mr-2">
+                        <i class="ri-star-fill"></i>
+                        <i class="ri-star-fill"></i>
+                        <i class="ri-star-fill"></i>
+                        <i class="ri-star-fill"></i>
+                        <i class="ri-star-half-fill"></i>
+                    </div>
+                    <span class="text-gray-600 font-medium">4.8 (128)</span>
+                </div>
+            </div>
+            
+            <div class="flex flex-col md:flex-row gap-8">
+                <div class="md:w-1/3">
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Escribe tu valoración</h3>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tu puntuación</label>
+                            <div class="flex text-gray-300 text-2xl">
+                                <button class="hover:text-amber-400 focus:text-amber-400"><i class="ri-star-line"></i></button>
+                                <button class="hover:text-amber-400 focus:text-amber-400"><i class="ri-star-line"></i></button>
+                                <button class="hover:text-amber-400 focus:text-amber-400"><i class="ri-star-line"></i></button>
+                                <button class="hover:text-amber-400 focus:text-amber-400"><i class="ri-star-line"></i></button>
+                                <button class="hover:text-amber-400 focus:text-amber-400"><i class="ri-star-line"></i></button>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tu comentario</label>
+                            <textarea rows="4" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none" placeholder="Comparte tu experiencia con esta receta..."></textarea>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Añade fotos (opcional)</label>
+                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                                <div class="w-8 h-8 mx-auto flex items-center justify-center text-gray-400 mb-2">
+                                    <i class="ri-image-add-line text-2xl"></i>
+                                </div>
+                                <p class="text-sm text-gray-500">Arrastra y suelta tus fotos aquí o haz clic para seleccionarlas</p>
+                                <input type="file" multiple class="hidden" id="photo-upload">
+                                <button class="mt-2 text-sm text-primary font-medium hover:underline" onclick="document.getElementById('photo-upload').click()">Seleccionar fotos</button>
+                            </div>
+                        </div>
+                        <button class="w-full py-2 bg-primary text-white rounded-button whitespace-nowrap hover:bg-primary/90 transition">Publicar valoración</button>
+                    </div>
+                </div>
+                
+                <div class="md:w-2/3">
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <button class="bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-700 mr-2 hover:bg-gray-200">Más recientes</button>
+                            <button class="bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-700 mr-2 hover:bg-gray-200">Mejor valoradas</button>
+                            <button class="bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-700 hover:bg-gray-200">Con fotos</button>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <!-- Review 1 -->
+                        <div class="border-b border-gray-200 pb-6">
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden mr-3">
+                                        <img src="https://readdy.ai/api/search-image?query=professional%20headshot%20of%20a%20middle-aged%20woman%20with%20short%20blonde%20hair%2C%20smiling%2C%20neutral%20background%2C%20warm%20lighting&width=100&height=100&seq=19&orientation=squarish" alt="Usuario" class="w-full h-full object-cover">
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-gray-900">Laura Martínez</h4>
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <div class="flex text-amber-400 mr-2">
+                                                <i class="ri-star-fill"></i>
+                                                <i class="ri-star-fill"></i>
+                                                <i class="ri-star-fill"></i>
+                                                <i class="ri-star-fill"></i>
+                                                <i class="ri-star-fill"></i>
+                                            </div>
+                                            <span>15 abril, 2025</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="text-gray-400 hover:text-gray-600">
+                                    <i class="ri-more-2-fill"></i>
+                                </button>
+                            </div>
+                            <p class="text-gray-700 mb-3">¡Esta tarta es espectacular! La hice para el cumpleaños de mi marido y fue todo un éxito. El bizcocho quedó súper jugoso y el contraste con los frutos rojos es perfecto. Definitivamente la volveré a hacer.</p>
+                            <div class="grid grid-cols-4 gap-2 mb-3">
+                                <div class="aspect-square rounded overflow-hidden">
+                                    <img src="https://readdy.ai/api/search-image?query=homemade%20chocolate%20cake%20with%20berries%20on%20top%2C%20on%20a%20white%20plate%2C%20home%20kitchen%20setting%2C%20natural%20lighting&width=200&height=200&seq=20&orientation=squarish" alt="Foto de usuario" class="w-full h-full object-cover object-top">
+                                </div>
+                                <div class="aspect-square rounded overflow-hidden">
+                                    <img src="https://readdy.ai/api/search-image?query=slice%20of%20chocolate%20cake%20with%20a%20fork%20taking%20a%20bite%2C%20home%20kitchen%20setting%2C%20natural%20lighting&width=200&height=200&seq=21&orientation=squarish" alt="Foto de usuario" class="w-full h-full object-cover object-top">
+                                </div>
+                            </div>
+                            <div class="flex items-center text-sm">
+                                <button class="flex items-center text-gray-500 hover:text-primary mr-4">
+                                    <div class="w-4 h-4 flex items-center justify-center mr-1">
+                                        <i class="ri-thumb-up-line"></i>
+                                    </div>
+                                    <span>23</span>
+                                </button>
+                                <button class="text-gray-500 hover:text-primary">
+                                    <span>Responder</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Review 2 -->
+                        <div class="border-b border-gray-200 pb-6">
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden mr-3">
+                                        <img src="https://readdy.ai/api/search-image?query=professional%20headshot%20of%20a%20young%20man%20with%20dark%20hair%20and%20beard%2C%20smiling%2C%20neutral%20background%2C%20warm%20lighting&width=100&height=100&seq=22&orientation=squarish" alt="Usuario" class="w-full h-full object-cover">
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-gray-900">Carlos Sánchez</h4>
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <div class="flex text-amber-400 mr-2">
+                                                <i class="ri-star-fill"></i>
+                                                <i class="ri-star-fill"></i>
+                                                <i class="ri-star-fill"></i>
+                                                <i class="ri-star-fill"></i>
+                                                <i class="ri-star-line"></i>
+                                            </div>
+                                            <span>10 abril, 2025</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="text-gray-400 hover:text-gray-600">
+                                    <i class="ri-more-2-fill"></i>
+                                </button>
+                            </div>
+                            <p class="text-gray-700 mb-3">Muy buena receta, aunque tuve que dejarla un poco más en el horno porque me quedó algo húmeda en el centro. El sabor es increíble y la combinación con los frutos rojos le da un toque muy refrescante. Recomiendo usar chocolate de buena calidad para que quede más intenso.</p>
+                            <div class="flex items-center text-sm">
+                                <button class="flex items-center text-gray-500 hover:text-primary mr-4">
+                                    <div class="w-4 h-4 flex items-center justify-center mr-1">
+                                        <i class="ri-thumb-up-line"></i>
+                                    </div>
+                                    <span>15</span>
+                                </button>
+                                <button class="text-gray-500 hover:text-primary">
+                                    <span>Responder</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Review 3 -->
+                        <div>
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden mr-3">
+                                        <img src="https://readdy.ai/api/search-image?query=professional%20headshot%20of%20a%20middle-aged%20woman%20with%20long%20brown%20hair%2C%20smiling%2C%20neutral%20background%2C%20warm%20lighting&width=100&height=100&seq=23&orientation=squarish" alt="Usuario" class="w-full h-full object-cover">
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-gray-900">Elena Fernández</h4>
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <div class="flex text-amber-400 mr-2">
+                                                <i class="ri-star-fill"></i>
+                                                <i class="ri-star-fill"></i>
+                                                <i class="ri-star-fill"></i>
+                                                <i class="ri-star-fill"></i>
+                                                <i class="ri-star-half-fill"></i>
+                                            </div>
+                                            <span>5 abril, 2025</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="text-gray-400 hover:text-gray-600">
+                                    <i class="ri-more-2-fill"></i>
+                                </button>
+                            </div>
+                            <p class="text-gray-700 mb-3">Soy pastelera aficionada y tengo que decir que esta receta es de las mejores que he probado. El bizcocho queda muy esponjoso y con un sabor a chocolate intenso. Yo le añadí un poco de esencia de vainilla y quedó aún mejor. La decoración con frutos rojos le da un toque muy elegante.</p>
+                            <div class="grid grid-cols-4 gap-2 mb-3">
+                                <div class="aspect-square rounded overflow-hidden">
+                                    <img src="https://readdy.ai/api/search-image?query=homemade%20chocolate%20cake%20with%20berries%20and%20mint%20leaves%20on%20top%2C%20on%20a%20decorative%20plate%2C%20home%20kitchen%20setting%2C%20natural%20lighting&width=200&height=200&seq=24&orientation=squarish" alt="Foto de usuario" class="w-full h-full object-cover object-top">
+                                </div>
+                            </div>
+                            <div class="flex items-center text-sm">
+                                <button class="flex items-center text-gray-500 hover:text-primary mr-4">
+                                    <div class="w-4 h-4 flex items-center justify-center mr-1">
+                                        <i class="ri-thumb-up-line"></i>
+                                    </div>
+                                    <span>32</span>
+                                </button>
+                                <button class="text-gray-500 hover:text-primary">
+                                    <span>Responder</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 text-center">
+                        <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-button whitespace-nowrap hover:bg-gray-100 transition">Ver más valoraciones</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Similar Recipes -->
+    <section class="py-12 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8">Recetas similares</h2>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Similar Recipe 1 -->
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition">
+                    <div class="relative aspect-video">
+                        <img src="https://readdy.ai/api/search-image?query=chocolate%20cupcakes%20with%20chocolate%20frosting%20and%20sprinkles%2C%20on%20a%20white%20plate%2C%20professional%20food%20photography%20with%20soft%20natural%20lighting&width=400&height=300&seq=25&orientation=landscape" alt="Cupcakes de Chocolate" class="w-full h-full object-cover object-top">
+                        <button class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-full text-gray-700 hover:text-primary transition">
+                            <i class="ri-bookmark-line"></i>
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center text-xs text-gray-500 mb-1">
+                            <div class="flex items-center mr-3">
+                                <div class="w-3 h-3 flex items-center justify-center mr-1">
+                                    <i class="ri-time-line"></i>
+                                </div>
+                                <span>45 min</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 flex items-center justify-center mr-1">
+                                    <i class="ri-fire-line"></i>
+                                </div>
+                                <span>Fácil</span>
+                            </div>
+                        </div>
+                        <h3 class="text-base font-semibold text-gray-900 mb-1">Cupcakes de Chocolate</h3>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center text-amber-400 text-xs">
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-half-fill"></i>
+                                <span class="ml-1 text-gray-600">(86)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Similar Recipe 2 -->
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition">
+                    <div class="relative aspect-video">
+                        <img src="https://readdy.ai/api/search-image?query=chocolate%20mousse%20in%20elegant%20glass%20cups%20with%20whipped%20cream%20and%20chocolate%20shavings%2C%20professional%20food%20photography%20with%20soft%20natural%20lighting&width=400&height=300&seq=26&orientation=landscape" alt="Mousse de Chocolate" class="w-full h-full object-cover object-top">
+                        <button class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-full text-gray-700 hover:text-primary transition">
+                            <i class="ri-bookmark-line"></i>
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center text-xs text-gray-500 mb-1">
+                            <div class="flex items-center mr-3">
+                                <div class="w-3 h-3 flex items-center justify-center mr-1">
+                                    <i class="ri-time-line"></i>
+                                </div>
+                                <span>30 min</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 flex items-center justify-center mr-1">
+                                    <i class="ri-fire-line"></i>
+                                </div>
+                                <span>Media</span>
+                            </div>
+                        </div>
+                        <h3 class="text-base font-semibold text-gray-900 mb-1">Mousse de Chocolate</h3>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center text-amber-400 text-xs">
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <span class="ml-1 text-gray-600">(102)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Similar Recipe 3 -->
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition">
+                    <div class="relative aspect-video">
+                        <img src="https://readdy.ai/api/search-image?query=chocolate%20brownies%20with%20walnuts%20on%20a%20wooden%20board%2C%20professional%20food%20photography%20with%20soft%20natural%20lighting&width=400&height=300&seq=27&orientation=landscape" alt="Brownies de Chocolate" class="w-full h-full object-cover object-top">
+                        <button class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-full text-gray-700 hover:text-primary transition">
+                            <i class="ri-bookmark-line"></i>
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center text-xs text-gray-500 mb-1">
+                            <div class="flex items-center mr-3">
+                                <div class="w-3 h-3 flex items-center justify-center mr-1">
+                                    <i class="ri-time-line"></i>
+                                </div>
+                                <span>40 min</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 flex items-center justify-center mr-1">
+                                    <i class="ri-fire-line"></i>
+                                </div>
+                                <span>Fácil</span>
+                            </div>
+                        </div>
+                        <h3 class="text-base font-semibold text-gray-900 mb-1">Brownies de Chocolate</h3>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center text-amber-400 text-xs">
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-line"></i>
+                                <span class="ml-1 text-gray-600">(78)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Similar Recipe 4 -->
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition">
+                    <div class="relative aspect-video">
+                        <img src="https://readdy.ai/api/search-image?query=chocolate%20cookies%20with%20chocolate%20chips%20on%20a%20cooling%20rack%2C%20professional%20food%20photography%20with%20soft%20natural%20lighting&width=400&height=300&seq=28&orientation=landscape" alt="Galletas de Chocolate" class="w-full h-full object-cover object-top">
+                        <button class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-full text-gray-700 hover:text-primary transition">
+                            <i class="ri-bookmark-line"></i>
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center text-xs text-gray-500 mb-1">
+                            <div class="flex items-center mr-3">
+                                <div class="w-3 h-3 flex items-center justify-center mr-1">
+                                    <i class="ri-time-line"></i>
+                                </div>
+                                <span>35 min</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 flex items-center justify-center mr-1">
+                                    <i class="ri-fire-line"></i>
+                                </div>
+                                <span>Fácil</span>
+                            </div>
+                        </div>
+                        <h3 class="text-base font-semibold text-gray-900 mb-1">Galletas de Chocolate</h3>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center text-amber-400 text-xs">
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-half-fill"></i>
+                                <span class="ml-1 text-gray-600">(94)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-primary/10 rounded-2xl p-8 md:p-12">
+                <div class="max-w-3xl mx-auto text-center">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Recibe nuevas recetas en tu correo</h2>
+                    <p class="text-lg text-gray-700 mb-8">Suscríbete a nuestro boletín y recibe semanalmente las mejores recetas, consejos culinarios y novedades.</p>
+                    <div class="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
+                        <input type="email" placeholder="Tu correo electrónico" class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary">
+                        <button class="px-6 py-3 bg-primary text-white rounded-button whitespace-nowrap hover:bg-primary/90 transition">Suscribirme</button>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-4">Al suscribirte, aceptas nuestra <a href="#" class="text-primary hover:underline">política de privacidad</a>.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+                <div>
+                    <a href="#" class="text-white text-3xl font-['Pacifico'] mb-4 inline-block">logo</a>
+                    <p class="text-gray-400 mb-6">Tu portal de recetas favorito para descubrir, compartir y disfrutar de la mejor gastronomía.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 flex items-center justify-center bg-gray-800 rounded-full text-gray-400 hover:text-white hover:bg-primary transition">
+                            <i class="ri-facebook-fill"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 flex items-center justify-center bg-gray-800 rounded-full text-gray-400 hover:text-white hover:bg-primary transition">
+                            <i class="ri-instagram-line"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 flex items-center justify-center bg-gray-800 rounded-full text-gray-400 hover:text-white hover:bg-primary transition">
+                            <i class="ri-twitter-x-line"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 flex items-center justify-center bg-gray-800 rounded-full text-gray-400 hover:text-white hover:bg-primary transition">
+                            <i class="ri-youtube-line"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Enlaces rápidos</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Inicio</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Categorías</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Recetas populares</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Recetas rápidas</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Subir receta</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Categorías</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Desayunos</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Comidas</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Cenas</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Postres</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Bebidas</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Soporte</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Centro de ayuda</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Contacto</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Política de privacidad</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Términos y condiciones</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Política de cookies</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <p class="text-gray-400 text-sm mb-4 md:mb-0">© 2025 CocinaFácil. Todos los derechos reservados.</p>
+                    <div class="flex items-center space-x-4">
+                        <div class="w-8 h-8 flex items-center justify-center text-gray-400">
+                            <i class="ri-visa-fill text-2xl"></i>
+                        </div>
+                        <div class="w-8 h-8 flex items-center justify-center text-gray-400">
+                            <i class="ri-mastercard-fill text-2xl"></i>
+                        </div>
+                        <div class="w-8 h-8 flex items-center justify-center text-gray-400">
+                            <i class="ri-paypal-fill text-2xl"></i>
+                        </div>
+                        <div class="w-8 h-8 flex items-center justify-center text-gray-400">
+                            <i class="ri-apple-fill text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">Iniciar sesión</h2>
+                    <button id="closeLoginModal" class="text-gray-400 hover:text-gray-600">
+                        <i class="ri-close-line text-2xl"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
+                        <input type="email" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary" placeholder="tu@email.com">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+                        <input type="password" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary" placeholder="********">
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="remember" class="custom-checkbox mr-2">
+                            <label for="remember" class="text-sm text-gray-700">Recordarme</label>
+                        </div>
+                        <a href="#" class="text-sm text-primary hover:underline">¿Olvidaste tu contraseña?</a>
+                    </div>
+                    
+                    <button class="w-full py-2 bg-primary text-white rounded-button whitespace-nowrap hover:bg-primary/90 transition">Iniciar sesión</button>
+                    
+                    <div class="relative flex items-center justify-center">
+                        <div class="border-t border-gray-200 w-full absolute"></div>
+                        <span class="bg-white px-2 text-sm text-gray-500 relative">o continúa con</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <button class="flex items-center justify-center py-2 border border-gray-300 rounded-button whitespace-nowrap hover:bg-gray-50 transition">
+                            <div class="w-5 h-5 flex items-center justify-center mr-2">
+                                <i class="ri-google-fill text-red-500"></i>
+                            </div>
+                            <span class="text-sm">Google</span>
+                        </button>
+                        <button class="flex items-center justify-center py-2 border border-gray-300 rounded-button whitespace-nowrap hover:bg-gray-50 transition">
+                            <div class="w-5 h-5 flex items-center justify-center mr-2">
+                                <i class="ri-facebook-fill text-blue-600"></i>
+                            </div>
+                            <span class="text-sm">Facebook</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="mt-6 text-center">
+                    <p class="text-sm text-gray-600">¿No tienes una cuenta? <a href="#" id="showRegisterForm" class="text-primary font-medium hover:underline">Regístrate</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Form (hidden by default) -->
+    <div id="registerForm" class="hidden">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-gray-900">Crear cuenta</h2>
+            <button id="closeRegisterForm" class="text-gray-400 hover:text-gray-600">
+                <i class="ri-close-line text-2xl"></i>
+            </button>
+        </div>
+        
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nombre de usuario</label>
+                <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary" placeholder="Tu nombre de usuario">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
+                <input type="email" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary" placeholder="tu@email.com">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+                <input type="password" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary" placeholder="Mínimo 8 caracteres">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Confirmar contraseña</label>
+                <input type="password" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary" placeholder="Repite tu contraseña">
+            </div>
+            
+            <div class="flex items-start">
+                <input type="checkbox" id="terms" class="custom-checkbox mt-0.5 mr-2">
+                <label for="terms" class="text-sm text-gray-700">Acepto los <a href="#" class="text-primary hover:underline">términos y condiciones</a> y la <a href="#" class="text-primary hover:underline">política de privacidad</a>.</label>
+            </div>
+            
+            <button class="w-full py-2 bg-primary text-white rounded-button whitespace-nowrap hover:bg-primary/90 transition">Crear cuenta</button>
+            
+            <div class="relative flex items-center justify-center">
+                <div class="border-t border-gray-200 w-full absolute"></div>
+                <span class="bg-white px-2 text-sm text-gray-500 relative">o regístrate con</span>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-3">
+                <button class="flex items-center justify-center py-2 border border-gray-300 rounded-button whitespace-nowrap hover:bg-gray-50 transition">
+                    <div class="w-5 h-5 flex items-center justify-center mr-2">
+                        <i class="ri-google-fill text-red-500"></i>
+                    </div>
+                    <span class="text-sm">Google</span>
+                </button>
+                <button class="flex items-center justify-center py-2 border border-gray-300 rounded-button whitespace-nowrap hover:bg-gray-50 transition">
+                    <div class="w-5 h-5 flex items-center justify-center mr-2">
+                        <i class="ri-facebook-fill text-blue-600"></i>
+                    </div>
+                    <span class="text-sm">Facebook</span>
+                </button>
+            </div>
+        </div>
+        
+        <div class="mt-6 text-center">
+            <p class="text-sm text-gray-600">¿Ya tienes una cuenta? <a href="#" id="showLoginForm" class="text-primary font-medium hover:underline">Inicia sesión</a></p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cookie Banner
+            const cookieBanner = document.getElementById('cookieBanner');
+            const cookieAccept = document.getElementById('cookieAccept');
+            const cookieConfig = document.getElementById('cookieConfig');
+            
+            cookieAccept.addEventListener('click', function() {
+                cookieBanner.classList.add('hidden');
+            });
+            
+            cookieConfig.addEventListener('click', function() {
+                // Aquí iría la lógica para mostrar la configuración de cookies
+                cookieBanner.classList.add('hidden');
+            });
+            
+            // User Menu Toggle
+            const userMenuButton = document.getElementById('userMenuButton');
+            const userMenu = document.getElementById('userMenu');
+            
+            userMenuButton.addEventListener('click', function() {
+                userMenu.classList.toggle('hidden');
+            });
+            
+            // Close user menu when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!userMenuButton.contains(event.target) && !userMenu.contains(event.target)) {
+                    userMenu.classList.add('hidden');
+                }
+            });
+            
+            // Login Modal
+            const openLoginModal = document.getElementById('openLoginModal');
+            const loginModal = document.getElementById('loginModal');
+            const closeLoginModal = document.getElementById('closeLoginModal');
+            const showRegisterForm = document.getElementById('showRegisterForm');
+            const showLoginForm = document.getElementById('showLoginForm');
+            const loginForm = document.querySelector('#loginModal > div > div');
+            const registerForm = document.getElementById('registerForm');
+            
+            openLoginModal.addEventListener('click', function() {
+                loginModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            closeLoginModal.addEventListener('click', function() {
+                loginModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            });
+            
+            showRegisterForm.addEventListener('click', function(e) {
+                e.preventDefault();
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+                loginModal.querySelector('.bg-white').appendChild(registerForm);
+            });
+            
+            document.getElementById('closeRegisterForm').addEventListener('click', function() {
+                loginModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            });
+            
+            showLoginForm.addEventListener('click', function(e) {
+                e.preventDefault();
+                registerForm.classList.add('hidden');
+                loginForm.classList.remove('hidden');
+            });
+            
+            // Close modal when clicking outside
+            loginModal.addEventListener('click', function(event) {
+                if (event.target === loginModal) {
+                    loginModal.classList.add('hidden');
+                    document.body.style.overflow = '';
+                }
+            });
+            
+            // Star rating functionality
+            const stars = document.querySelectorAll('.text-2xl .ri-star-line');
+            stars.forEach((star, index) => {
+                star.addEventListener('click', () => {
+                    stars.forEach((s, i) => {
+                        if (i <= index) {
+                            s.classList.remove('ri-star-line');
+                            s.classList.add('ri-star-fill');
+                            s.classList.add('text-amber-400');
+                        } else {
+                            s.classList.remove('ri-star-fill');
+                            s.classList.remove('text-amber-400');
+                            s.classList.add('ri-star-line');
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
